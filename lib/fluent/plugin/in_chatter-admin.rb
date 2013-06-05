@@ -11,7 +11,8 @@ class TermtterInput < Input
 
   def start
     csv_name = 'FeedPost.csv'
-    csv_path = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'csv', csv_name))
+    csv_path = File.expand_path(File.join(File.dirname(__FILE__),
+      '..', '..', '..', 'csv', csv_name))
     table = CSV.table(csv_path, encoding: "UTF8")
     keys = table.headers
 
@@ -21,8 +22,20 @@ class TermtterInput < Input
       unless pri_key == "Id"
         Engine.emit("chatter.admin",
           Engine.now, {
+            "id" => hashed_row[:id],
+            "feeditemid" => hashed_row[:feeditemid],
+            "parentid" => hashed_row[:parentid],
+            "type" => hashed_row[:type],
+            "createbyid" => hashed_row[:createbyid],
+            "createdate" => hashed_row[:createdate],
+            "systemmodstamp" => hashed_row[:systemmodstamp],
             "title" => hashed_row[:title],
             "body"  => hashed_row[:body],
+            "linkurl" => hashed_row[:linkurl],
+            "isdeleted" => hashed_row[:isdeleted],
+            "contentid" => hashed_row[:contentid],
+            "relatedrecordid" => hashed_row[:relatedrecordid],
+            "insertedbyid" => hashed_row[:insertedbyid],
           }
         )
       end
