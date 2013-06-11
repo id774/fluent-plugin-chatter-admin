@@ -1,7 +1,7 @@
 require 'fluent/plugin'
 require 'fluent/config'
 require 'fluent/input'
-require 'csv'
+require 'sqlite3'
 
 module Fluent
 
@@ -10,36 +10,54 @@ class TermtterInput < Input
   Plugin.register_input('chatter-admin', self)
 
   def start
-    csv_name = 'FeedPost.csv'
-    csv_path = File.expand_path(File.join(File.dirname(__FILE__),
-      '..', '..', '..', 'csv', csv_name))
-    table = CSV.table(csv_path, encoding: "UTF8")
-    keys = table.headers
+    db_name = 'chatter.db'
+    db_path = File.expand_path(File.join(File.dirname(__FILE__),
+      '..', '..', '..', 'db', db_name))
+    db = SQLite3::Database.new(db_path)
 
-    CSV.foreach(csv_path, encoding: "UTF8") do |row|
-      hashed_row = Hash[*keys.zip(row).flatten]
-      pri_key = hashed_row[:id]
-      unless pri_key == "Id"
-        Engine.emit("chatter.admin",
-          Engine.now, {
-            "id" => hashed_row[:id],
-            "feeditemid" => hashed_row[:feeditemid],
-            "parentid" => hashed_row[:parentid],
-            "type" => hashed_row[:type],
-            "createbyid" => hashed_row[:createbyid],
-            "createdate" => hashed_row[:createdate],
-            "systemmodstamp" => hashed_row[:systemmodstamp],
-            "title" => hashed_row[:title],
-            "body"  => hashed_row[:body],
-            "linkurl" => hashed_row[:linkurl],
-            "isdeleted" => hashed_row[:isdeleted],
-            "contentid" => hashed_row[:contentid],
-            "relatedrecordid" => hashed_row[:relatedrecordid],
-            "insertedbyid" => hashed_row[:insertedbyid],
-          }
-        )
-      end
+    sql = "select
+           feedposts.Id,
+           feedposts.CreatedDate,
+           feedposts.Title,
+           feedposts.Body,
+           feedposts.LinkUrl,
+           feedposts.IsDeleted,
+           users.Id,
+           users.Username,
+           users.FirstName,
+           users.LastName,
+           users.CompanyName,
+           users.Division,
+           users.Department,
+           users.Title,
+           users.IsActive,
+           users.Email
+           from feedposts left join users on (feedposts.CreatedById = users.Id)"
+
+    db.execute(sql) do |row|
+      Engine.emit("chatter.admin",
+        Engine.now, {
+          "id"           => row[0],
+          "created_at"   => row[1],
+          "title"        => row[2],
+          "body"         => row[3],
+          "linkurl"      => row[4],
+          "is_deleted"   => row[5],
+          "user_id"      => row[6],
+          "username"     => row[7],
+          "firstname"    => row[8],
+          "lastname"     => row[9],
+          "companyname"  => row[10],
+          "division"     => row[11],
+          "department"   => row[12],
+          "user_title"   => row[13],
+          "is_active"    => row[14],
+          "email"        => row[15],
+        }
+      )
     end
+
+    db.close
   end
 end
 
