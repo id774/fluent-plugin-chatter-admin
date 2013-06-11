@@ -18,8 +18,9 @@ Or install it yourself as:
 
 ## Usage
 
-1. Put chatter csv to csv directory.
-2. This plugin will load the data of the csv files.
+0. Use chatter importer (see ext directory).
+1. Put chatter sqlite db to db directory.
+2. This plugin will load the data from sqlite db.
 
 ### Fluentd config
 
