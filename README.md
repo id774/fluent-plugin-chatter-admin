@@ -18,9 +18,9 @@ Or install it yourself as:
 
 ## Usage
 
-0. Use chatter importer (see ext directory).
-1. Put chatter sqlite db to db directory.
-2. This plugin will load the data from sqlite db.
+1. Use chatter importer (see ext directory).
+2. Put chatter sqlite db to db directory.
+3. This plugin will load the data from sqlite db.
 
 ### Fluentd config
 
