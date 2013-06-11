@@ -35,9 +35,9 @@ class TermtterInput < Input
            from feedposts left join users on (feedposts.CreatedById = users.Id)"
 
     db.execute(sql) do |row|
-      Engine.emit("chatter.admin",
+      Engine.emit("chatter.chatter",
         Engine.now, {
-          "id"           => row[0],
+          "post_id"      => row[0],
           "created_at"   => row[1],
           "title"        => row[2],
           "body"         => row[3],
