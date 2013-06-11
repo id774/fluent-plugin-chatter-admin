@@ -28,6 +28,13 @@ Or install it yourself as:
       type chatter-admin
     </source>
 
+### Output example
+
+    <match chatter.chatter>
+      type sqlite3
+      path chatter.db
+    </match>
+
 ## Contributing
 
 1. Fork it
